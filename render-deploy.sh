@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -e
 
-: "${PORT:=8000}"
-
-poetry run alembic upgrade head
-exec poetry run uvicorn src.main:app --host 0.0.0.0 --port "$PORT"
+alembic upgrade head
+uvicorn src.main:app --host 0.0.0.0 --port $PORT
