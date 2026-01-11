@@ -4,6 +4,7 @@ from httpx import ASGITransport, AsyncClient
 from src.main import app
 import src.security as s
 
+
 async def main():
     print('jwt_audience', s.settings.jwt_audience)
     print('jwt_issuer', s.settings.jwt_issuer)

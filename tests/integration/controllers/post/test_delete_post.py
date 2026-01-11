@@ -1,3 +1,5 @@
+# Testes de integração do endpoint DELETE /posts/{id}.
+
 import pytest_asyncio
 from fastapi import status
 from httpx import AsyncClient
@@ -5,6 +7,7 @@ from httpx import AsyncClient
 
 @pytest_asyncio.fixture(autouse=True)
 async def populate_posts(db):
+    # Insere posts para testar delete.
     from src.schemas.post import PostIn
     from src.services.post import PostService
 
@@ -46,4 +49,5 @@ async def test_delete_post_not_found_success(client: AsyncClient, access_token: 
     response = await client.delete(f"/posts/{post_id}", headers=headers)
 
     # Then
+    # Design escolhido: delete idempotente (mesmo se não existir, retorna 204).
     assert response.status_code == status.HTTP_204_NO_CONTENT

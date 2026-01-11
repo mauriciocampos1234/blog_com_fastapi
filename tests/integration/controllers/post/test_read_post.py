@@ -1,3 +1,5 @@
+# Testes de integração do endpoint GET /posts/{id}.
+
 import pytest_asyncio
 from fastapi import status
 from httpx import AsyncClient
@@ -5,6 +7,7 @@ from httpx import AsyncClient
 
 @pytest_asyncio.fixture(autouse=True)
 async def populate_posts(db):
+    # Insere posts para testar busca por id.
     from src.schemas.post import PostIn
     from src.services.post import PostService
 
@@ -49,4 +52,5 @@ async def test_read_post_not_found_fail(client: AsyncClient, access_token: str):
     response = await client.get(f"/posts/{post_id}", headers=headers)
 
     # Then
+    # Como só criamos 3 posts, id=4 não existe.
     assert response.status_code == status.HTTP_404_NOT_FOUND

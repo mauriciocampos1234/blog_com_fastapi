@@ -1,3 +1,5 @@
+# Testes de integração do endpoint PATCH /posts/{id}.
+
 import pytest_asyncio
 from fastapi import status
 from httpx import AsyncClient
@@ -5,6 +7,7 @@ from httpx import AsyncClient
 
 @pytest_asyncio.fixture(autouse=True)
 async def populate_posts(db):
+    # Insere posts para testar update.
     from src.schemas.post import PostIn
     from src.services.post import PostService
 
@@ -17,6 +20,8 @@ async def populate_posts(db):
 async def test_update_post_success(client: AsyncClient, access_token: str):
     # Given
     headers = {"Authorization": f"Bearer {access_token}"}
+
+    # PATCH permite enviar somente o campo que vai mudar.
     data = {"title": "update title post 1"}
     post_id = 1
 

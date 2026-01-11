@@ -1,3 +1,5 @@
+# Testes de integração do endpoint GET /posts/ (listagem).
+
 import pytest
 import pytest_asyncio
 from fastapi import status
@@ -6,10 +8,12 @@ from httpx import AsyncClient
 
 @pytest_asyncio.fixture(autouse=True)
 async def populate_posts(db):
+    # Popula o banco com posts para os testes de listagem.
     from src.schemas.post import PostIn
     from src.services.post import PostService
 
     service = PostService()
+    # Dois publicados, um não publicado.
     await service.create(PostIn(title="post 1", content="some content", published=True))
     await service.create(PostIn(title="post 2", content="some content", published=True))
     await service.create(PostIn(title="post 3", content="some content", published=False))
@@ -18,6 +22,7 @@ async def populate_posts(db):
 @pytest.mark.parametrize("published,total", [("on", 2), ("off", 1)])
 async def test_read_posts_by_status_success(client: AsyncClient, access_token: str, published: str, total: int):
     # Given
+    # Esses params são obrigatórios no endpoint: published e limit.
     params = {"published": published, "limit": 10}
     headers = {"Authorization": f"Bearer {access_token}"}
 
@@ -33,6 +38,7 @@ async def test_read_posts_by_status_success(client: AsyncClient, access_token: s
 
 async def test_read_posts_limit_success(client: AsyncClient, access_token: str):
     # Given
+    # Limitando para 1, mesmo havendo 2 publicados, deve retornar 1.
     params = {"published": "on", "limit": 1}
     headers = {"Authorization": f"Bearer {access_token}"}
 
@@ -62,6 +68,7 @@ async def test_read_posts_empty_parameters_fail(client: AsyncClient, access_toke
     headers = {"Authorization": f"Bearer {access_token}"}
 
     # When
+    # Sem params obrigatórios, FastAPI retorna 422.
     response = await client.get("/posts/", params={}, headers=headers)
 
     # Then
